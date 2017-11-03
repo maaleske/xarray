@@ -80,7 +80,7 @@ class RasterioArrayWrapper(NdimSizeLenMixin, DunderArrayMixin):
         return out
 
 
-def open_rasterio(filename, chunks=None, cache=None, lock=None):
+def open_rasterio(filename, chunks=None, cache=None, lock=None, **rasterio_kwargs):
     """Open a file with rasterio (experimental).
 
     This should work with any file that rasterio can open (most often:
@@ -94,6 +94,9 @@ def open_rasterio(filename, chunks=None, cache=None, lock=None):
     ----------
     filename : str
         Path to the file to open.
+
+    rasterio_kwargs : dict
+        Additional parameters to pass to `rasterio.open`
 
     Returns
     -------
@@ -115,8 +118,10 @@ def open_rasterio(filename, chunks=None, cache=None, lock=None):
         dask's multithreaded backend.
     """
 
+    rasterio_kwargs['mode'] = 'r'
+
     import rasterio
-    riods = rasterio.open(filename, mode='r')
+    riods = rasterio.open(filename, **rasterio_kwargs)
 
     if cache is None:
         cache = chunks is None
